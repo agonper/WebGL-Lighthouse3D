@@ -18,6 +18,7 @@ var require = {
         stats: '../lib/stats',
         WebGLUtils: '../lib/webgl-utils',
         WebGLDebugUtils: '../lib/webgl-debug',
+        GLMatrix: '../lib/gl-matrix',
         // RequireJS libraries
         text: '../lib/text',
         shader: '../lib/shader',

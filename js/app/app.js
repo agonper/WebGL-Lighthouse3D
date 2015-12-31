@@ -3,24 +3,21 @@
  *
  * App main code, app is unique
  */
-define(['initializers/stats'], function (stats) {
+define(['initializers/stats', 'components/scene'], function (stats, scene) {
 
-  function a() {
-    var sum = 0;
-    for (var i = 0; i < 100000; i++) {
-      sum += i;
-    }
-    //console.log('SUM:', sum);
+  function generateFrame() {
+    scene.animate();
+    scene.draw();
   }
 
   var App = {};
 
   App.initialize = function () {
-    console.log('Hey there! This seems working');
+    scene.draw();
   };
 
   App.animate = function () {
-    stats.update(a);
+    stats.update(generateFrame);
     requestAnimationFrame(App.animate);
   };
 

@@ -28,14 +28,14 @@ define(['initializers/webgl'], function (webgl) {
     getAttribute: function(name) {
       var attribute = gl.getAttribLocation(this.program, name);
       if (attribute < 0) {
-        throw new Error('WebGL: Attribute not found:', name);
+        throw new Error('WebGL: Attribute not found: ' + name);
       }
       return attribute;
     },
     getUniform: function(name) {
       var uniform = gl.getUniformLocation(this.program, name);
       if (!uniform) {
-        throw new Error('WebGL: Uniform not found:', name);
+        throw new Error('WebGL: Uniform not found: ' + name);
       }
       return uniform;
     }
@@ -43,14 +43,14 @@ define(['initializers/webgl'], function (webgl) {
 
   /*
      #####################################
-                 Function utils
+                 Util functions
      #####################################
    */
 
   function createProgram(vShader, fShader) {
     // Create shader object
-    var vertexShader = loadShader(gl, gl.VERTEX_SHADER, vShader);
-    var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fShader);
+    var vertexShader = loadShader(gl.VERTEX_SHADER, vShader);
+    var fragmentShader = loadShader(gl.FRAGMENT_SHADER, fShader);
     if (!vertexShader || !fragmentShader) {
       return null;
     }
