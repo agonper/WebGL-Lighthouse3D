@@ -1,6 +1,6 @@
 attribute vec4 a_Position;
 attribute vec3 a_Normal;
-//attribute vec2 a_TexCoord;
+attribute vec2 a_TexCoord;
 
 uniform mat4 u_MvpMatrix;
 uniform vec4 u_Color;
@@ -9,7 +9,7 @@ uniform vec3 u_LightDirection;
 uniform vec3 u_AmbientLight;
 
 varying vec4 v_Color;
-//varying vec2 v_TexCoord;
+varying vec2 v_TexCoord;
 void main() {
 	gl_Position = u_MvpMatrix * a_Position;
 	vec3 normal = normalize(a_Normal);
@@ -17,5 +17,5 @@ void main() {
 	vec3 diffuse = u_LightColor * vec3(u_Color) * nDotL;
 	vec3 ambient = u_AmbientLight * u_Color.rgb;
 	v_Color = vec4(diffuse + ambient, u_Color.a);
-//	v_TexCoord = a_TexCoord;
+	v_TexCoord = a_TexCoord;
 }

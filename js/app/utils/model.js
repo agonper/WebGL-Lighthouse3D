@@ -35,16 +35,16 @@ define(['initializers/webgl', 'GLMatrix'], function (webgl, GLMatrix) {
 
       var position = program.getAttribute('a_Position');
       var normal = program.getAttribute('a_Normal');
-      //var texCoord = program.getAttribute('a_TexCoord');
+      var texCoord = program.getAttribute('a_TexCoord');
 
       gl.vertexAttribPointer(position, 3, gl.FLOAT, false, 4*8, 0);
       gl.enableVertexAttribArray(position);
 
       gl.vertexAttribPointer(normal, 3, gl.FLOAT, false, 4*8, 4*3);
       gl.enableVertexAttribArray(normal);
-      //
-      //gl.vertexAttribPointer(texCoord, 2, gl.FLOAT, false, 4*8, 4*6);
-      //gl.enableVertexAttribArray(texCoord);
+
+      gl.vertexAttribPointer(texCoord, 2, gl.FLOAT, false, 4*8, 4*6);
+      gl.enableVertexAttribArray(texCoord);
 
       // Model transformations
 
