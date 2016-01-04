@@ -6,7 +6,12 @@ define(function () {
     return deg * (Math.PI / 180);
   }
 
+  function radiansToDegrees(rad) {
+    return (rad*180) / Math.PI;
+  }
+
   return {
-    degreesToRadians: degreesToRadians
+    degreesToRadians: degreesToRadians,
+    radiansToDegrees: radiansToDegrees
   };
 });

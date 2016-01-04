@@ -29,5 +29,5 @@ define(function () {
     }
   }
 
-  return createPlane(4,4,1,1);
+  return createPlane(20,20,1,1);
 });

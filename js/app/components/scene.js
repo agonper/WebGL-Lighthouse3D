@@ -1,13 +1,15 @@
 /**
  * Created by Alberto on 31/12/2015.
  */
-define(['initializers/webgl', 'programs/directional-light', 'utils/model', 'models/templates/plane', 'GLMatrix', 'utils/trigonometry'],
-  function(webgl, directionalLight, Model, Plane, GLMatrix, Trigonometry) {
+define(['initializers/webgl', 'programs/directional-light', 'utils/model', 'models/templates/plane', 'GLMatrix', 'utils/trigonometry', 'components/camera'],
+  function(webgl, directionalLight, Model, Plane, GLMatrix, Trigonometry, Camera) {
     var mat4 = GLMatrix.mat4;
     var vec3 = GLMatrix.vec3;
 
     var gl = webgl.getContext();
     var canvas = webgl.getCanvas();
+
+    var camera = null;
 
     var instance = null;
 
@@ -20,6 +22,9 @@ define(['initializers/webgl', 'programs/directional-light', 'utils/model', 'mode
       initialize: function () {
         gl.enable(gl.DEPTH_TEST);
         gl.clearColor(0, 0, 0, 1);
+
+        camera = Camera.getInstance();
+        camera.moveTo(vec3.fromValues(2, 2, 6))
       },
       draw: function() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -29,11 +34,14 @@ define(['initializers/webgl', 'programs/directional-light', 'utils/model', 'mode
         var projMatrix = mat4.create();
         mat4.perspective(projMatrix, Trigonometry.degreesToRadians(30), canvas.width / canvas.height, 0.1, 100.0);
 
-        var viewMatrix = mat4.create();
-        var eyeFrom = vec3.fromValues(2, 2, 6);
-        var lookAt = vec3.fromValues(0, 0, 0);
-        var upDirection = vec3.fromValues(0, 1, 0);
-        mat4.lookAt(viewMatrix, eyeFrom, lookAt, upDirection);
+
+        //var viewMatrix = mat4.create();
+        //var eyeFrom = vec3.fromValues(2, 2, 6);
+        //var lookAt = vec3.fromValues(0, 0, 0);
+        //var upDirection = vec3.fromValues(0, 1, 0);
+        //mat4.lookAt(viewMatrix, eyeFrom, lookAt, upDirection);
+
+        var viewMatrix = camera.getViewMatrix();
 
         var mvpMatrix = mat4.create();
         mat4.multiply(mvpMatrix, projMatrix, viewMatrix);

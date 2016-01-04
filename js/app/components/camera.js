@@ -1,91 +1,149 @@
 /**
- * Created by Alberto on 03/01/2016.
+ * Created by Alberto on 04/01/2016.
  *
- * Camera object
+ * FPS camera for moving around the scene
  */
-define(['GLMatrix'], function (GLMatrix) {
+define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl, GLMatrix, Trigonometry) {
   var mat4 = GLMatrix.mat4;
   var vec3 = GLMatrix.vec3;
 
+  var canvas = webgl.getCanvas();
+
   var instance = null;
+
+  // Keys
+  var upPressed = false;
+  var downPressed = false;
+  var rightPressed = false;
+  var leftPressed = false;
 
   function Camera() {
     if (instance) {
-      throw new Error('A camera instance already exists, please call getInstance() instead');
+      throw new Error('Camera: This is a singleton class, please use getInstance() instead');
     }
-    this.matrix = mat4.create();
-    this.position = vec3.create();
-    this.focus = vec3.create();
-    this.up = vec3.fromValues(0,1,0);
+
     this.azimuth = Camera.DEFAULT_AZIMUTH;
     this.elevation = Camera.DEFAULT_ELEVATION;
-    this.steps = 0;
-    this.home = vec3.create();
+
+    this.position = vec3.fromValues(0, 0, -20);
+    this.lookAt = vec3.fromValues(0, 0, 0);
+    this.up = vec3.fromValues(0, 1, 0);
+
+    this.speed = Camera.DEFAULT_MOVEMENT_SPEED;
+
+    // Listeners
+    var _this = this;
+    document.addEventListener('keydown', function(ev) {
+      _this.onKeyDown(_this, ev);
+    });
+    document.addEventListener('keyup', function(ev) {
+      _this.onKeyUp(_this, ev);
+    });
   }
 
-  Camera.DEFAULT_AZIMUTH = 0.0;
-  Camera.DEFAULT_ELEVATION = 45.0;
+  Camera.DEFAULT_AZIMUTH = Trigonometry.degreesToRadians(90);
+  Camera.DEFAULT_ELEVATION = Trigonometry.degreesToRadians(90);
+  Camera.DEFAULT_MOVEMENT_SPEED = 0.1;
 
   Camera.prototype = {
-    goHome: function(homePosition) {
-      if (homePosition !== null) {
-        this.home = homePosition;
-      }
-
-      vec3.set(this.position, this.home[0], this.home[1], this.home[2]);
+    setMovementSpeed: function(speed) {
+      this.speed = speed;
+    },
+    moveTo: function(position) {
       this.azimuth = Camera.DEFAULT_AZIMUTH;
       this.elevation = Camera.DEFAULT_ELEVATION;
-      this.steps = 0;
-      this.update();
+      this.position = vec3.clone(position);
     },
-    dolly: function(stepCount) {
-      this.steps += stepCount;
-
-      var positionX = this.position[0] + this.steps * Math.sin(90 - this.azimuth) * Math.cos(this.elevation);
-      var positionY = this.position[1] + this.steps * Math.cos(this.azimuth);
-      var positionZ = this.position[2] + this.steps * Math.sin(90 - this.azimuth) * Math.sin(this.elevation);
-
-      var newPosition = vec3.fromValues(positionX, positionY, positionZ);
-
-      this.setPosition(newPosition);
+    onMouseMove: function(context, ev) {
+      context.azimuth += ev.movementX*0.002;
+      context.elevation += ev.movementY*0.002;
     },
-    setPosition: function(position) {
-      vec3.set(this.position, position[0], position[1], position[2]);
-      this.update();
-    },
-    setAzimuth: function(azimuth) {
-      this.changeAzimuth(azimuth - this.azimuth);
-    },
-    changeAzimuth: function(azimuth) {
-      this.azimuth += azimuth;
+    onKeyDown: function(context, ev) {
+      if(ev.keyCode==39) //DER
+        context.azimuth += 0.01;
 
-      if (this.azimuth > 360 || this.azimuth < -360) {
-        this.azimuth = this.azimuth % 360;
-      }
-      this.update();
-    },
-    setElevation: function(elevation) {
-      this.changeElevation(elevation - this.elevation);
-    },
-    changeElevation: function(elevation) {
-      this.elevation += elevation;
+      if(ev.keyCode==37) //IZQ
+        context.azimuth -= 0.01;
 
-      if (this.elevation > 360 || this.elevation < -360){
-        this.elevation = this.elevation % 360;
-      }
-      this.update();
+      if(ev.keyCode==38) //ARR
+        context.elevation -= 0.01;
+
+      if(ev.keyCode==40) //ABA
+        context.elevation += 0.01;
+
+
+      if(ev.keyCode==87) //W
+        upPressed = true;
+
+      if(ev.keyCode==83) //S
+        downPressed = true;
+
+      if(ev.keyCode==65) //A
+        leftPressed = true;
+
+      if(ev.keyCode==68) //D
+        rightPressed = true;
     },
-    update: function() {
-      var focusX = (this.steps + 500) * Math.sin(90 - this.azimuth)*Math.cos(this.elevation);
-      var focusY = (this.steps + 500) * Math.cos(this.azimuth);
-      var focusZ = (this.steps + 500) * Math.sin(90 - this.azimuth)*Math.sin(this.elevation);
+    onKeyUp: function (context, ev) {
+      if(ev.keyCode==87) //W
+        upPressed = false;
 
-      this.focus = vec3.fromValues(focusX, focusY, focusZ);
+      if(ev.keyCode==83) //S
+        downPressed = false;
 
-      mat4.lookAt(this.matrix, this.position, this.focus, this.up);
+      if(ev.keyCode==65) //A
+        leftPressed = false;
+
+      if(ev.keyCode==68) //D
+        rightPressed = false;
     },
     getViewMatrix: function() {
-      return this.matrix;
+      var dirLookX = Math.sin(this.elevation)*Math.cos(this.azimuth);
+      var dirLookY = Math.cos(this.elevation);
+      var dirLookZ = Math.sin(this.elevation)*Math.sin(this.azimuth);
+
+      var dirLook = vec3.fromValues(dirLookX, dirLookY, dirLookZ);
+
+      var dirRight = vec3.create();
+      vec3.cross(dirRight, dirLook, this.up);
+
+      if (upPressed)
+      {
+        this.position[0] += this.speed * dirLookX;
+        this.position[1] += this.speed * dirLookY;
+        this.position[2] += this.speed * dirLookZ;
+      }
+
+      if (downPressed)
+      {
+        this.position[0] -= this.speed * dirLookX;
+        this.position[1] -= this.speed * dirLookY;
+        this.position[2] -= this.speed * dirLookZ;
+      }
+
+      if (rightPressed) {
+        this.position[0] += this.speed * dirRight[0];
+        this.position[1] += this.speed * dirRight[1];
+        this.position[2] += this.speed * dirRight[2];
+      }
+
+      if (leftPressed) {
+        this.position[0] -= this.speed * dirRight[0];
+        this.position[1] -= this.speed * dirRight[1];
+        this.position[2] -= this.speed * dirRight[2];
+      }
+
+      this.lookAt[0] = this.position[0] + dirLookX;
+      this.lookAt[1] = this.position[1] + dirLookY;
+      this.lookAt[2] = this.position[2] + dirLookZ;
+
+      var cameraInfo = document.getElementById('camera-info');
+      cameraInfo.innerHTML = 'Observer position: ' + vec3.str(this.position) + '<br>' +
+          'Observer looking at: ' + vec3.str(this.lookAt);
+
+      var viewMatrix = mat4.create();
+      mat4.lookAt(viewMatrix, this.position, this.lookAt, this.up);
+      return viewMatrix;
     }
   };
 
@@ -96,5 +154,5 @@ define(['GLMatrix'], function (GLMatrix) {
     return instance;
   };
 
-  return Camera.getInstance();
+  return Camera;
 });
