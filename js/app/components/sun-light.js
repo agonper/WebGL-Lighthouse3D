@@ -43,7 +43,8 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
       var now = Date.now();
       var elapsed = now - this.lastCall;
       this.lastCall = now;
-      this.elevation = this.elevation + SunLight.DEFAULT_ANGLE_STEP * elapsed / 1000.0;
+      this.elevation = (this.elevation + SunLight.DEFAULT_ANGLE_STEP * elapsed / 1000.0)
+        % Trigonometry.degreesToRadians(360);
 
       var matrix = mat4.create();
       mat4.rotateX(matrix, matrix, this.elevation);

@@ -48,5 +48,7 @@ define(['initializers/webgl', 'GLMatrix'], function (webgl, GLMatrix) {
       instance = new Fog();
     }
     return instance;
-  }
+  };
+
+  return Fog;
 });

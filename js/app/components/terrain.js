@@ -58,9 +58,16 @@ define([
         var mvpMatrix = mat4.create();
         mat4.multiply(mvpMatrix, projMatrix, viewMatrix);
 
+        // Eye
+        var eye = this.program.getUniform('u_Eye');
+        gl.uniform3fv(eye, this.camera.getObserverPosition());
+
         // Lights
         AmbientLight.getInstance().addToObject(this.program);
         SunLight.getInstance().addToObject(this.program);
+
+        // Fog
+        Fog.getInstance().addToObject(this.program);
 
         this.model.draw(this.program, mvpMatrix);
       }

@@ -44,13 +44,16 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
 
     // Projection
     this.projMatrix = mat4.create();
-    mat4.perspective(this.projMatrix, Trigonometry.degreesToRadians(30), canvas.width / canvas.height, 0.1, 500.0);
+    this.farPlane = Camera.DEFAULT_FAR_PLANE;
+    mat4.perspective(this.projMatrix, Trigonometry.degreesToRadians(30),
+      canvas.width / canvas.height, 0.1, this.farPlane);
   }
 
   Camera.DEFAULT_AZIMUTH = Trigonometry.degreesToRadians(90);
   Camera.DEFAULT_ELEVATION = Trigonometry.degreesToRadians(90);
   Camera.DEFAULT_MOVEMENT_SPEED_RATIO = 1;
   Camera.DEFAULT_ROTATION_SPEED_RATIO = 1;
+  Camera.DEFAULT_FAR_PLANE = 500.0;
 
   Camera.prototype = {
     setMovementSpeedRatio: function(ratio) {
@@ -63,6 +66,11 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
       this.azimuth = Camera.DEFAULT_AZIMUTH;
       this.elevation = Camera.DEFAULT_ELEVATION;
       this.position = vec3.clone(position);
+    },
+    setFarPlane: function(distance) {
+      this.farPlane = distance + 50.0;
+      mat4.perspective(this.projMatrix, Trigonometry.degreesToRadians(30),
+        canvas.width / canvas.height, 0.1, this.farPlane);
     },
     onMouseMove: function(context, ev) {
       context.azimuth += ev.movementX*0.002;

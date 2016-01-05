@@ -7,9 +7,12 @@ define([
   'utils/texture-storage',
   'components/ambient-light',
   'components/sun-light',
+  'components/fog',
   'components/terrain'
   ],
-  function(webgl, Camera, TextureStorage, AmbientLight, SunLight, Terrain) {
+  function(webgl, Camera, TextureStorage, AmbientLight, SunLight, Fog, Terrain) {
+    var RENDER_DISTANCE = 350.0;
+
     var gl = webgl.getContext();
 
     var instance = null;
@@ -19,7 +22,6 @@ define([
       this.animatedObjects = [];
 
       gl.enable(gl.DEPTH_TEST);
-      gl.clearColor(0, 0, 0, 1);
 
       // Load textures
       var textureStorage = TextureStorage.getInstance();
@@ -33,17 +35,27 @@ define([
       this.camera.moveTo([0, 52, 6]);
       this.camera.setMovementSpeedRatio(5);
       this.camera.setRotationSpeedRatio(5);
+      this.camera.setFarPlane(RENDER_DISTANCE);
 
       // Lights
-      this.ambientLight = AmbientLight.getInstance();
-      this.ambientLight.setLevel([0.2, 0.2, 0.2]);
+      var ambientLight = AmbientLight.getInstance();
+      ambientLight.setLevel([0.2, 0.2, 0.2]);
 
-      this.sunLight = SunLight.getInstance();
-      this.sunLight.setPosition([3.0, -10.0, 2.5]);
+      var sunLight = SunLight.getInstance();
+      sunLight.setPosition([3.0, -10.0, 2.5]);
+
+      // Fog
+      var fog = Fog.getInstance();
+      var fogColor = [0.7, 0.7, 0.7];
+      fog.changeColor(fogColor);
+      fog.setStart(150);
+      fog.setEnd(RENDER_DISTANCE);
+
+      gl.clearColor(fogColor[0], fogColor[1], fogColor[2], 1);
 
       // Scene objects
       this.sceneObjects.push(new Terrain());
-      this.animatedObjects.push(this.sunLight);
+      this.animatedObjects.push(sunLight);
     }
 
     Scene.prototype = {

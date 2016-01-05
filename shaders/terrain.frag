@@ -4,11 +4,14 @@ uniform vec3 u_LightColor;
 uniform vec3 u_LightDirection;
 uniform vec3 u_AmbientLight;
 
+uniform vec3 u_FogColor;
+uniform vec2 u_FogDist;
+
 uniform sampler2D u_Sampler0;
 uniform sampler2D u_Sampler1;
 
 varying vec2 v_TexCoord;
-
+varying float v_Dist;
 void main() {
 	vec4 texColor = texture2D(u_Sampler0, v_TexCoord);
 
@@ -17,6 +20,10 @@ void main() {
 
 	vec3 diffuse = u_LightColor * texColor.rgb * nDotL;
 	vec3 ambient = u_AmbientLight * texColor.rbg;
+    vec3 lightedColor = diffuse + ambient;
 
-    gl_FragColor = vec4(diffuse + ambient, texColor.a);
+	float fogFactor = clamp((u_FogDist.y - v_Dist) / (u_FogDist.y - u_FogDist.x), 0.0, 1.0);
+    vec3 color = mix(u_FogColor, lightedColor, fogFactor);
+
+    gl_FragColor = vec4(color, texColor.a);
 }
