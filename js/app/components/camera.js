@@ -21,6 +21,7 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
     if (instance) {
       throw new Error('Camera: This is a singleton class, please use getInstance() instead');
     }
+    this.viewmatrix = mat4.create();
 
     this.azimuth = Camera.DEFAULT_AZIMUTH;
     this.elevation = Camera.DEFAULT_ELEVATION;
@@ -29,7 +30,8 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
     this.lookAt = vec3.fromValues(0, 0, 0);
     this.up = vec3.fromValues(0, 1, 0);
 
-    this.speed = Camera.DEFAULT_MOVEMENT_SPEED;
+    this.speedRatio = Camera.DEFAULT_MOVEMENT_SPEED_RATIO;
+    this.rotationRatio = Camera.DEFAULT_ROTATION_SPEED_RATIO;
 
     // Listeners
     var _this = this;
@@ -39,15 +41,23 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
     document.addEventListener('keyup', function(ev) {
       _this.onKeyUp(_this, ev);
     });
+
+    // Projection
+    this.projMatrix = mat4.create();
+    mat4.perspective(this.projMatrix, Trigonometry.degreesToRadians(30), canvas.width / canvas.height, 0.1, 500.0);
   }
 
   Camera.DEFAULT_AZIMUTH = Trigonometry.degreesToRadians(90);
   Camera.DEFAULT_ELEVATION = Trigonometry.degreesToRadians(90);
-  Camera.DEFAULT_MOVEMENT_SPEED = 0.1;
+  Camera.DEFAULT_MOVEMENT_SPEED_RATIO = 1;
+  Camera.DEFAULT_ROTATION_SPEED_RATIO = 1;
 
   Camera.prototype = {
-    setMovementSpeed: function(speed) {
-      this.speed = speed;
+    setMovementSpeedRatio: function(ratio) {
+      this.speedRatio = ratio;
+    },
+    setRotationSpeedRatio: function (ratio) {
+      this.rotationRatio = ratio;
     },
     moveTo: function(position) {
       this.azimuth = Camera.DEFAULT_AZIMUTH;
@@ -60,16 +70,16 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
     },
     onKeyDown: function(context, ev) {
       if(ev.keyCode==39) //DER
-        context.azimuth += 0.01;
+        context.azimuth += this.rotationRatio * 0.01;
 
       if(ev.keyCode==37) //IZQ
-        context.azimuth -= 0.01;
+        context.azimuth -= this.rotationRatio * 0.01;
 
       if(ev.keyCode==38) //ARR
-        context.elevation -= 0.01;
+        context.elevation -= this.rotationRatio * 0.01;
 
       if(ev.keyCode==40) //ABA
-        context.elevation += 0.01;
+        context.elevation += this.rotationRatio * 0.01;
 
 
       if(ev.keyCode==87) //W
@@ -97,7 +107,7 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
       if(ev.keyCode==68) //D
         rightPressed = false;
     },
-    getViewMatrix: function() {
+    update: function() {
       var dirLookX = Math.sin(this.elevation)*Math.cos(this.azimuth);
       var dirLookY = Math.cos(this.elevation);
       var dirLookZ = Math.sin(this.elevation)*Math.sin(this.azimuth);
@@ -109,28 +119,28 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
 
       if (upPressed)
       {
-        this.position[0] += this.speed * dirLookX;
-        this.position[1] += this.speed * dirLookY;
-        this.position[2] += this.speed * dirLookZ;
+        this.position[0] += this.speedRatio * 0.1* dirLookX;
+        this.position[1] += this.speedRatio * 0.1 * dirLookY;
+        this.position[2] += this.speedRatio * 0.1 * dirLookZ;
       }
 
       if (downPressed)
       {
-        this.position[0] -= this.speed * dirLookX;
-        this.position[1] -= this.speed * dirLookY;
-        this.position[2] -= this.speed * dirLookZ;
+        this.position[0] -= this.speedRatio * 0.1 * dirLookX;
+        this.position[1] -= this.speedRatio * 0.1 * dirLookY;
+        this.position[2] -= this.speedRatio * 0.1 * dirLookZ;
       }
 
       if (rightPressed) {
-        this.position[0] += this.speed * dirRight[0];
-        this.position[1] += this.speed * dirRight[1];
-        this.position[2] += this.speed * dirRight[2];
+        this.position[0] += this.speedRatio * 0.1 * dirRight[0];
+        this.position[1] += this.speedRatio * 0.1 * dirRight[1];
+        this.position[2] += this.speedRatio * 0.1 * dirRight[2];
       }
 
       if (leftPressed) {
-        this.position[0] -= this.speed * dirRight[0];
-        this.position[1] -= this.speed * dirRight[1];
-        this.position[2] -= this.speed * dirRight[2];
+        this.position[0] -= this.speedRatio * 0.1 * dirRight[0];
+        this.position[1] -= this.speedRatio * 0.1 * dirRight[1];
+        this.position[2] -= this.speedRatio * 0.1 * dirRight[2];
       }
 
       this.lookAt[0] = this.position[0] + dirLookX;
@@ -141,9 +151,13 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
       cameraInfo.innerHTML = 'Observer position: ' + vec3.str(this.position) + '<br>' +
           'Observer looking at: ' + vec3.str(this.lookAt);
 
-      var viewMatrix = mat4.create();
-      mat4.lookAt(viewMatrix, this.position, this.lookAt, this.up);
-      return viewMatrix;
+      mat4.lookAt(this.viewmatrix, this.position, this.lookAt, this.up);
+    },
+    getViewMatrix: function () {
+      return this.viewmatrix;
+    },
+    getProjectionMatrix: function() {
+      return this.projMatrix;
     }
   };
 

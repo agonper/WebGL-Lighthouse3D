@@ -26,8 +26,6 @@ define(['initializers/webgl', 'GLMatrix'], function (webgl, GLMatrix) {
   Model.prototype = {
     draw: function(program, mvpMat, color) {
 
-      program.enable();
-
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices);
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indices);
 
@@ -80,6 +78,12 @@ define(['initializers/webgl', 'GLMatrix'], function (webgl, GLMatrix) {
 
       gl.bindBuffer(gl.ARRAY_BUFFER, null);
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    },
+    addTexture: function(program, texture) {
+      gl.activeTexture(gl.TEXTURE0 + texture.texUnit);
+      gl.bindTexture(gl.TEXTURE_2D, texture.texture);
+      var sampler = program.getUniform('u_Sampler' + texture.texUnit);
+      gl.uniform1i(sampler, texture.texUnit);
     }
   };
 
