@@ -12,9 +12,12 @@ define([
   'utils/model',
   'models/plane',
   'components/camera',
-  'utils/texture-storage'
+  'utils/texture-storage',
+  'components/ambient-light',
+  'components/sun-light',
+  'components/fog'
 ],
-  function (webgl, GLMatrix, Program, vShader, fShader, Model, Plane, Camera, TextureStorage) {
+  function (webgl, GLMatrix, Program, vShader, fShader, Model, Plane, Camera, TextureStorage, AmbientLight, SunLight, Fog) {
     var gl = webgl.getContext();
     var mat4 = GLMatrix.mat4;
 
@@ -35,6 +38,7 @@ define([
       draw: function() {
         this.program.enable();
 
+        // Textures
         var texture = this.textureStorage.retrieveTexture('terrain/texture.png');
         var normals = this.textureStorage.retrieveTexture('terrain/normals.png');
         var heightmap = this.textureStorage.retrieveTexture('terrain/heightmap.png');
@@ -43,14 +47,20 @@ define([
         this.model.addTexture(this.program, normals);
         this.model.addTexture(this.program, heightmap);
 
+        // Y axis displacement
         var heightRatio = this.program.getUniform('u_HeightRatio');
         gl.uniform1f(heightRatio, this.terrainSize/10.0);
 
+        // MvpMatrix
         var viewMatrix = this.camera.getViewMatrix();
         var projMatrix = this.camera.getProjectionMatrix();
 
         var mvpMatrix = mat4.create();
         mat4.multiply(mvpMatrix, projMatrix, viewMatrix);
+
+        // Lights
+        AmbientLight.getInstance().addToObject(this.program);
+        SunLight.getInstance().addToObject(this.program);
 
         this.model.draw(this.program, mvpMatrix);
       }

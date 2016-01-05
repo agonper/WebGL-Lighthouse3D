@@ -158,6 +158,9 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
     },
     getProjectionMatrix: function() {
       return this.projMatrix;
+    },
+    getObserverPosition: function() {
+      return this.position;
     }
   };
 

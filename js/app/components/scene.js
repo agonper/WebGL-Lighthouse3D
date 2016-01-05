@@ -1,10 +1,16 @@
 /**
  * Created by Alberto on 31/12/2015.
  */
-define(['initializers/webgl', 'GLMatrix', 'components/camera', 'utils/texture-storage', 'components/terrain'],
-  function(webgl, GLMatrix, Camera, TextureStorage, Terrain) {
+define([
+  'initializers/webgl',
+  'components/camera',
+  'utils/texture-storage',
+  'components/ambient-light',
+  'components/sun-light',
+  'components/terrain'
+  ],
+  function(webgl, Camera, TextureStorage, AmbientLight, SunLight, Terrain) {
     var gl = webgl.getContext();
-    var vec3 = GLMatrix.vec3;
 
     var instance = null;
 
@@ -24,24 +30,33 @@ define(['initializers/webgl', 'GLMatrix', 'components/camera', 'utils/texture-st
 
       // Scene camera
       this.camera = Camera.getInstance();
-      this.camera.moveTo(vec3.fromValues(0, 52, 6));
+      this.camera.moveTo([0, 52, 6]);
       this.camera.setMovementSpeedRatio(5);
       this.camera.setRotationSpeedRatio(5);
 
+      // Lights
+      this.ambientLight = AmbientLight.getInstance();
+      this.ambientLight.setLevel([0.2, 0.2, 0.2]);
+
+      this.sunLight = SunLight.getInstance();
+      this.sunLight.setPosition([3.0, -10.0, 2.5]);
+
       // Scene objects
       this.sceneObjects.push(new Terrain());
+      this.animatedObjects.push(this.sunLight);
     }
 
     Scene.prototype = {
       draw: function() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        this.camera.update();
 
         this.sceneObjects.forEach(function(object) {
           object.draw();
         })
       },
       animate: function() {
+        this.camera.update();
+
         this.animatedObjects.forEach(function(object) {
           object.animate();
         });
