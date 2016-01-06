@@ -21,18 +21,16 @@ define([
     var gl = webgl.getContext();
     var mat4 = GLMatrix.mat4;
 
-    function Terrain() {
+    function Terrain(size) {
       this.camera = Camera.getInstance();
       this.textureStorage = TextureStorage.getInstance();
 
       this.program = new Program(vShader.value, fShader.value);
 
-      this.terrainSize = Terrain.DEFAULT_TERRAIN_SIZE;
+      this.terrainSize = size;
       var plane = new Plane(this.terrainSize, this.terrainSize, 128, 128);
       this.model = new Model(plane.vertices, plane.indices);
     }
-
-    Terrain.DEFAULT_TERRAIN_SIZE = 512;
 
     Terrain.prototype = {
       draw: function() {
@@ -51,7 +49,7 @@ define([
         var heightRatio = this.program.getUniform('u_HeightRatio');
         gl.uniform1f(heightRatio, this.terrainSize/10.0);
 
-        // MvpMatrix
+        // mvpMatrix
         var viewMatrix = this.camera.getViewMatrix();
         var projMatrix = this.camera.getProjectionMatrix();
 

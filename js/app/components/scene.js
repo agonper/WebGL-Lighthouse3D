@@ -8,10 +8,12 @@ define([
   'components/ambient-light',
   'components/sun-light',
   'components/fog',
-  'components/terrain'
+  'components/terrain',
+  'components/forest'
   ],
-  function(webgl, Camera, TextureStorage, AmbientLight, SunLight, Fog, Terrain) {
+  function(webgl, Camera, TextureStorage, AmbientLight, SunLight, Fog, Terrain, Forest) {
     var RENDER_DISTANCE = 350.0;
+    var MAP_SIZE = 512.0;
 
     var gl = webgl.getContext();
 
@@ -54,7 +56,10 @@ define([
       gl.clearColor(fogColor[0], fogColor[1], fogColor[2], 1);
 
       // Scene objects
-      this.sceneObjects.push(new Terrain());
+      this.sceneObjects.push(new Terrain(MAP_SIZE));
+      this.sceneObjects.push(new Forest(MAP_SIZE));
+
+      // Animated scene objects
       this.animatedObjects.push(sunLight);
     }
 
