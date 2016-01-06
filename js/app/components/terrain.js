@@ -69,7 +69,8 @@ define([
         // Fog
         Fog.getInstance().addToObject(this.program);
 
-        this.model.draw(this.program, mvpMatrix);
+        var attributes = { texCoords: true };
+        this.model.draw(this.program, mvpMatrix, attributes);
       }
     };
 

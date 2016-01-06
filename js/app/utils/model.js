@@ -22,26 +22,27 @@ define(['initializers/webgl'], function (webgl) {
   }
 
   Model.prototype = {
-    draw: function(program, mvpMat) {
+    draw: function(program, mvpMat, attributes) {
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices);
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indices);
 
-      // Model elements properties
-
+      // Model properties
       var position = program.getAttribute('a_Position');
-      var normal = program.getAttribute('a_Normal');
-      var texCoord = program.getAttribute('a_TexCoord');
-
-      gl.vertexAttribPointer(position, 3, gl.FLOAT, false, 4*8, 0);
+      gl.vertexAttribPointer(position, 3, gl.FLOAT, false, 4 * 8, 0);
       gl.enableVertexAttribArray(position);
 
-      gl.vertexAttribPointer(normal, 3, gl.FLOAT, false, 4*8, 4*3);
-      gl.enableVertexAttribArray(normal);
+      if (attributes.normals) {
+        var normal = program.getAttribute('a_Normal');
+        gl.vertexAttribPointer(normal, 3, gl.FLOAT, false, 4 * 8, 4 * 3);
+        gl.enableVertexAttribArray(normal);
+      }
 
-      gl.vertexAttribPointer(texCoord, 2, gl.FLOAT, false, 4*8, 4*6);
-      gl.enableVertexAttribArray(texCoord);
-
+      if (attributes.texCoords) {
+        var texCoord = program.getAttribute('a_TexCoord');
+        gl.vertexAttribPointer(texCoord, 2, gl.FLOAT, false, 4 * 8, 4 * 6);
+        gl.enableVertexAttribArray(texCoord);
+      }
       // Model transformations
 
       var mvpMatrix = program.getUniform('u_MvpMatrix');
