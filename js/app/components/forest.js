@@ -17,12 +17,14 @@ define([
 ], function (webgl, GLMatrix, ImprovedNoise, Program, vShader, fShader, Camera, Model, cube, AmbientLight, SunLight, Fog) {
   var gl = webgl.getContext();
   var mat4 = GLMatrix.mat4;
+  var vec4 = GLMatrix.vec4;
 
   function Forest(terrainSize) {
     var _this = this;
 
     _this.loaded = false;
     _this.extention = Forest.DEFAULT_EXTENTION;
+    _this.exclusionArea = Forest.DEFAULT_EXCLUSION_AREA;
     _this.trees = [];
 
     _this.camera = Camera.getInstance();
@@ -55,26 +57,30 @@ define([
       var perlin = new ImprovedNoise();
       for (var x = _this.extention.xMin; x <= _this.extention.xMax; x += 10) {
         for (var z = _this.extention.zMin; z <= _this.extention.zMax; z += 10) {
-          var y = heights[x + z*terrainSize]*(terrainSize/10.0);
-          var noiseValue = perlin.noise(x - terrainSize/2.0, y, z - terrainSize/2.0);
+          var worldX = x - terrainSize/2.0;
+          var worldZ = z - terrainSize/2.0;
+          if (!_this._pointIsExcluded(worldX, worldZ)) {
+            var worldY = heights[x + z * terrainSize] * (terrainSize / 10.0);
+            var noiseValue = perlin.noise(worldX, worldY, worldZ);
 
-          if (noiseValue >= 0.01 && noiseValue < 0.1) {
-            var tree = {
-              coords: {
-                x: x - terrainSize/2.0,
-                y: y,
-                z: z - terrainSize/2.0
+            if (noiseValue >= 0.01 && noiseValue < 0.1) {
+              var tree = {
+                coords: {
+                  x: worldX,
+                  y: worldY,
+                  z: worldZ
+                }
+              };
+              if (noiseValue >= 0.09) {
+                tree.type = 0;
+                _this.trees.push(tree);
+              } else if (noiseValue >= 0.05 && noiseValue < 0.06) {
+                tree.type = 1;
+                _this.trees.push(tree);
+              } else if (noiseValue >= 0.01 && noiseValue < 0.02) {
+                tree.type = 2;
+                _this.trees.push(tree);
               }
-            };
-            if (noiseValue >= 0.09) {
-              tree.type = 0;
-              _this.trees.push(tree);
-            } else if (noiseValue >= 0.05 && noiseValue < 0.06) {
-              tree.type = 1;
-              _this.trees.push(tree);
-            } else if (noiseValue >= 0.01 && noiseValue < 0.02) {
-              tree.type = 2;
-              _this.trees.push(tree);
             }
           }
         }
@@ -85,10 +91,21 @@ define([
   }
 
   Forest.DEFAULT_EXTENTION = {
-    xMin: 10.0,
-    zMin: 10.0,
-    xMax: 500.0,
-    zMax: 140.0
+    xMin: 10,
+    zMin: 10,
+    xMax: 500,
+    zMax: 140
+  };
+
+  Forest.DEFAULT_EXCLUSION_AREA = {
+    xMin: -20,
+    xMax: 20
+  };
+
+  var colors = {
+    '0': vec4.fromValues(0.15, 0.68, 0.38, 1.0),
+    '1': vec4.fromValues(0.54, 0.60, 0.36, 1.0),
+    '2': vec4.fromValues(0.29, 0.36, 0.14, 1.0)
   };
 
   Forest.prototype = {
@@ -97,18 +114,46 @@ define([
         this.program.enable();
 
         // View & Projection matrices
+        var vpMatrix = mat4.create();
         var viewMatrix = this.camera.getViewMatrix();
         var projMatrix = this.camera.getProjectionMatrix();
+        mat4.multiply(vpMatrix, projMatrix, viewMatrix);
+        var mvpMatrix = mat4.create();
 
         // Lights
         AmbientLight.getInstance().addToObject(this.program);
         SunLight.getInstance().addToObject(this.program);
 
         // Fog
-        //Fog.getInstance().addToObject(this.program);
+        Fog.getInstance().addToObject(this.program);
 
         var attributes = { normals: true };
+
+        var normalMatrix = mat4.create();
+
+        var _this = this;
+        this.trees.forEach(function(tree) {
+          // Model matrix
+          var modelMatrix = mat4.create();
+          mat4.translate(modelMatrix, modelMatrix, [tree.coords.x, tree.coords.y + 4.0, tree.coords.z]);
+          mat4.scale(modelMatrix, modelMatrix, [8, 8, 8]);
+
+          // Normal matrix
+          mat4.invert(normalMatrix, modelMatrix);
+          mat4.transpose(normalMatrix, normalMatrix);
+          mat4.multiply(mvpMatrix, vpMatrix, modelMatrix);
+          var normalMatLoc = _this.program.getUniform('u_NormalMatrix');
+          gl.uniformMatrix4fv(normalMatLoc, false, normalMatrix);
+
+          // Color
+          var color = _this.program.getUniform('u_Color');
+          gl.uniform4fv(color, colors[tree.type]);
+          _this.model.draw(_this.program, mvpMatrix, attributes);
+        });
       }
+    },
+    _pointIsExcluded: function(x, z) {
+      return x >= this.exclusionArea.xMin && x <= this.exclusionArea.xMax;
     }
   };
 
