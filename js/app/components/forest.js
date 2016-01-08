@@ -127,7 +127,7 @@ define([
         // Fog
         Fog.getInstance().addToObject(this.program);
 
-        var attributes = { normals: true };
+        var attributes = { size: 8, normals: { position: 3 } };
 
         var normalMatrix = mat4.create();
 

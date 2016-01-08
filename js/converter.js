@@ -28,9 +28,12 @@
     for (var i = 0; i < verticesTri.length; i++) {
       vertices.push(verticesTri[i][0], verticesTri[i][1], verticesTri[i][2]);
       vertices.push(normals[i][0], normals[i][1], normals[i][2]);
-      vertices.push(colors[i][0], colors[i][1], colors[i][2]);
+      vertices.push(colors[i][0]/255, colors[i][1]/255, colors[i][2]/255);
     }
+
+    console.log('Vertices:', vertices);
+    console.log('Indices:', indices);
     console.log('OK');
   };
   rawFile.send();
-})('models/BigPalmTree.json');
+})('models/Lighthouse.json');

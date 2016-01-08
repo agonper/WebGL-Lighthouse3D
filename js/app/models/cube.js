@@ -3,6 +3,8 @@
  */
 define(function () {
   return {
+    // Vertex: X, Y, Z, normalX, normalY, normalZ, texCoordX, texCoordY
+
     "vertices" : [-0.5,-0.5, 0.5, 0.0, 0.0, 1.0, 0.0, 0.0,
       0.5,-0.5, 0.5, 0.0, 0.0, 1.0, 1.0, 0.0,
       0.5, 0.5, 0.5, 0.0, 0.0, 1.0, 1.0, 1.0,
