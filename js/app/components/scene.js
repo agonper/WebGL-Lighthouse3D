@@ -9,9 +9,10 @@ define([
   'components/sun-light',
   'components/fog',
   'components/terrain',
+  'components/lighthouse',
   'components/forest'
   ],
-  function(webgl, Camera, TextureStorage, AmbientLight, SunLight, Fog, Terrain, Forest) {
+  function(webgl, Camera, TextureStorage, AmbientLight, SunLight, Fog, Terrain, Lighthouse, Forest) {
     var RENDER_DISTANCE = 350.0;
     var MAP_SIZE = 512.0;
 
@@ -27,7 +28,7 @@ define([
 
       // Load textures
       var textureStorage = TextureStorage.getInstance();
-      //Terrain textures
+      //  Terrain textures
       textureStorage.storeTexture('terrain/texture.png', 0);
       textureStorage.storeTexture('terrain/normals.png', 1);
       textureStorage.storeTexture('terrain/heightmap.png', 2);
@@ -57,10 +58,13 @@ define([
 
       // Scene objects
       this.sceneObjects.push(new Terrain(MAP_SIZE));
+      var sceneLighthouse = new Lighthouse();
+      this.sceneObjects.push(sceneLighthouse);
       this.sceneObjects.push(new Forest(MAP_SIZE));
 
       // Animated scene objects
       this.animatedObjects.push(sunLight);
+      this.animatedObjects.push(sceneLighthouse);
     }
 
     Scene.prototype = {

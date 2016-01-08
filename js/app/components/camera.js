@@ -34,6 +34,7 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
     this.rotationRatio = Camera.DEFAULT_ROTATION_SPEED_RATIO;
 
     // Listeners
+    //  Keyboard
     var _this = this;
     document.addEventListener('keydown', function(ev) {
       _this.onKeyDown(_this, ev);
@@ -42,11 +43,30 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
       _this.onKeyUp(_this, ev);
     });
 
+    //  Mouse
+    var pointerLock = false;
+    canvas.addEventListener('click', function(ev) {
+      canvas.requestPointerLock = canvas.requestPointerLock ||
+        canvas.mozRequestPointerLock ||
+        canvas.webkitRequestPointerLock;
+      canvas.requestPointerLock();
+    });
+    document.addEventListener('pointerlockchange', function (ev) {
+      pointerLock = !!(document.pointerLockElement === canvas ||
+      document.mozPointerLockElement === canvas ||
+      document.webkitPointerLockElement === canvas);
+    });
+    document.addEventListener('mousemove', function(ev) {
+      if (pointerLock) {
+        _this.onMouseMove(_this, ev);
+      }
+    });
+
     // Projection
     this.projMatrix = mat4.create();
     this.farPlane = Camera.DEFAULT_FAR_PLANE;
-    mat4.perspective(this.projMatrix, Trigonometry.degreesToRadians(30),
-      canvas.width / canvas.height, 0.1, this.farPlane);
+    this.fov = Camera.DEFAULT_FOV;
+    mat4.perspective(this.projMatrix, this.fov, canvas.width / canvas.height, 0.1, this.farPlane);
   }
 
   Camera.DEFAULT_AZIMUTH = Trigonometry.degreesToRadians(90);
@@ -54,6 +74,7 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
   Camera.DEFAULT_MOVEMENT_SPEED_RATIO = 1;
   Camera.DEFAULT_ROTATION_SPEED_RATIO = 1;
   Camera.DEFAULT_FAR_PLANE = 500.0;
+  Camera.DEFAULT_FOV = Trigonometry.degreesToRadians(35);
 
   Camera.prototype = {
     setMovementSpeedRatio: function(ratio) {
@@ -69,8 +90,7 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
     },
     setFarPlane: function(distance) {
       this.farPlane = distance + 50.0;
-      mat4.perspective(this.projMatrix, Trigonometry.degreesToRadians(30),
-        canvas.width / canvas.height, 0.1, this.farPlane);
+      mat4.perspective(this.projMatrix, this.fov, canvas.width / canvas.height, 0.1, this.farPlane);
     },
     onMouseMove: function(context, ev) {
       context.azimuth += ev.movementX*0.002;

@@ -24,6 +24,8 @@ define([
   function Forest(terrainSize) {
     var _this = this;
 
+    _this.scale = Forest.DEFAULT_SCALE;
+
     _this.loaded = false;
     _this.extention = Forest.DEFAULT_EXTENTION;
     _this.exclusionArea = Forest.DEFAULT_EXCLUSION_AREA;
@@ -31,11 +33,10 @@ define([
 
     _this.camera = Camera.getInstance();
     _this.program = new Program(vShader.value, fShader.value);
-    //_this.model = new Model(cube.vertices, cube.indices);
     _this.models = [
       new Model(standardTree.vertices, standardTree.indices),
       new Model(bigPalmTree.vertices, bigPalmTree.indices),
-      new Model(littlePalmTree.vertices, littlePalmTree.indices),
+      new Model(littlePalmTree.vertices, littlePalmTree.indices)
     ];
 
     var img = new Image();
@@ -109,11 +110,7 @@ define([
     xMax: 20
   };
 
-  //var colors = {
-  //  '0': vec4.fromValues(0.15, 0.68, 0.38, 1.0),
-  //  '1': vec4.fromValues(0.54, 0.60, 0.36, 1.0),
-  //  '2': vec4.fromValues(0.29, 0.36, 0.14, 1.0)
-  //};
+  Forest.DEFAULT_SCALE = 8;
 
   Forest.prototype = {
     draw: function () {
@@ -142,12 +139,12 @@ define([
           // Model matrix
           var modelMatrix = mat4.create();
           mat4.translate(modelMatrix, modelMatrix, [tree.coords.x, tree.coords.y, tree.coords.z]);
-          mat4.scale(modelMatrix, modelMatrix, [8, 8, 8]);
+          mat4.scale(modelMatrix, modelMatrix, [_this.scale, _this.scale, _this.scale]);
+          mat4.multiply(mvpMatrix, vpMatrix, modelMatrix);
 
           // Normal matrix
           mat4.invert(normalMatrix, modelMatrix);
           mat4.transpose(normalMatrix, normalMatrix);
-          mat4.multiply(mvpMatrix, vpMatrix, modelMatrix);
           var normalMatLoc = _this.program.getUniform('u_NormalMatrix');
           gl.uniformMatrix4fv(normalMatLoc, false, normalMatrix);
 

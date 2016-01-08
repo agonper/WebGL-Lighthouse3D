@@ -5,7 +5,6 @@ attribute vec4 a_Color;
 uniform mat4 u_MvpMatrix;
 uniform mat4 u_NormalMatrix;
 
-
 varying vec4 v_Color;
 varying vec3 v_Normal;
 varying float v_Dist;
