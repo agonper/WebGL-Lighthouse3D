@@ -10,11 +10,13 @@ define([
   'shader!forest.frag',
   'components/camera',
   'utils/model',
-  'models/cube',
+  'models/big-palm-tree',
+  'models/little-palm-tree',
+  'models/standard-tree',
   'components/ambient-light',
   'components/sun-light',
   'components/fog'
-], function (webgl, GLMatrix, ImprovedNoise, Program, vShader, fShader, Camera, Model, cube, AmbientLight, SunLight, Fog) {
+], function (webgl, GLMatrix, ImprovedNoise, Program, vShader, fShader, Camera, Model, bigPalmTree, littlePalmTree, standardTree, AmbientLight, SunLight, Fog) {
   var gl = webgl.getContext();
   var mat4 = GLMatrix.mat4;
   var vec4 = GLMatrix.vec4;
@@ -29,7 +31,12 @@ define([
 
     _this.camera = Camera.getInstance();
     _this.program = new Program(vShader.value, fShader.value);
-    _this.model = new Model(cube.vertices, cube.indices);
+    //_this.model = new Model(cube.vertices, cube.indices);
+    _this.models = [
+      new Model(standardTree.vertices, standardTree.indices),
+      new Model(bigPalmTree.vertices, bigPalmTree.indices),
+      new Model(littlePalmTree.vertices, littlePalmTree.indices),
+    ];
 
     var img = new Image();
     img.onload = function() {
@@ -102,11 +109,11 @@ define([
     xMax: 20
   };
 
-  var colors = {
-    '0': vec4.fromValues(0.15, 0.68, 0.38, 1.0),
-    '1': vec4.fromValues(0.54, 0.60, 0.36, 1.0),
-    '2': vec4.fromValues(0.29, 0.36, 0.14, 1.0)
-  };
+  //var colors = {
+  //  '0': vec4.fromValues(0.15, 0.68, 0.38, 1.0),
+  //  '1': vec4.fromValues(0.54, 0.60, 0.36, 1.0),
+  //  '2': vec4.fromValues(0.29, 0.36, 0.14, 1.0)
+  //};
 
   Forest.prototype = {
     draw: function () {
@@ -127,15 +134,14 @@ define([
         // Fog
         Fog.getInstance().addToObject(this.program);
 
-        var attributes = { size: 8, normals: { position: 3 } };
-
+        var attributes = { size: 9, normals: { position: 3 }, colors: { position: 6 } };
         var normalMatrix = mat4.create();
 
         var _this = this;
         this.trees.forEach(function(tree) {
           // Model matrix
           var modelMatrix = mat4.create();
-          mat4.translate(modelMatrix, modelMatrix, [tree.coords.x, tree.coords.y + 4.0, tree.coords.z]);
+          mat4.translate(modelMatrix, modelMatrix, [tree.coords.x, tree.coords.y, tree.coords.z]);
           mat4.scale(modelMatrix, modelMatrix, [8, 8, 8]);
 
           // Normal matrix
@@ -145,10 +151,7 @@ define([
           var normalMatLoc = _this.program.getUniform('u_NormalMatrix');
           gl.uniformMatrix4fv(normalMatLoc, false, normalMatrix);
 
-          // Color
-          var color = _this.program.getUniform('u_Color');
-          gl.uniform4fv(color, colors[tree.type]);
-          _this.model.draw(_this.program, mvpMatrix, attributes);
+          _this.models[tree.type].draw(_this.program, mvpMatrix, attributes);
         });
       }
     },
