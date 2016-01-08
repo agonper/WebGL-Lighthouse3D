@@ -30,11 +30,11 @@ define([
       this.lighthouseScale = Lighthouse.DEFAULT_SCALE;
       this.lighthousePosition = Lighthouse.DEFAULT_POSITION;
 
-      this.torchScale = 0.25;
-      this.torchPosition = vec3.fromValues(0.0, 9.44, 0.0);
+      this.torchScale = 3.5;
+      this.torchPosition = vec3.fromValues(0.0, 132.16, 0.0);
 
-      this.torchLightPosition = vec3.fromValues(4.0, 0.0, 0.0);
-      this.torchLightAzimuth = Trigonometry.degreesToRadians(0);
+      this.torchLightPosition = vec3.fromValues(7.0, 0.0, 0.0);
+      this.torchLightAzimuth = 0.0;
       this.torchLightColor = Lighthouse.DEFAULT_TORCH_COLOR;
 
       this.shininess = Lighthouse.DEFAULT_SHININESS;
@@ -84,10 +84,14 @@ define([
         var modelMatLoc = this.program.getUniform('u_ModelMatrix');
 
         // Lighthouse
+        var modelLighthouseMatrix = null;
+        var modelTorchMatrix = null;
+        var torchLightMatrix = null;
 
         //    Model matrix
-        var modelLighthouseMatrix = mat4.create();
+        modelLighthouseMatrix = mat4.create();
         mat4.translate(modelLighthouseMatrix, modelLighthouseMatrix, this.lighthousePosition);
+        modelTorchMatrix = mat4.clone(modelLighthouseMatrix); // Torch origin -> LightHouse
         mat4.scale(modelLighthouseMatrix, modelLighthouseMatrix, [this.lighthouseScale, this.lighthouseScale, this.lighthouseScale]);
 
         //    Normal matrix
@@ -98,8 +102,10 @@ define([
         // Torch
 
         //    Model matrix
-        var modelTorchMatrix = mat4.clone(modelLighthouseMatrix);
+        //modelTorchMatrix = mat4.clone(modelLighthouseMatrix);
         mat4.translate(modelTorchMatrix, modelTorchMatrix, this.torchPosition);
+        torchLightMatrix = mat4.clone(modelTorchMatrix); // Torch light origin -> Torch
+        mat4.rotateY(modelTorchMatrix, modelTorchMatrix, this.torchLightAzimuth);
         mat4.scale(modelTorchMatrix, modelTorchMatrix, [this.torchScale, this.torchScale, this.torchScale]);
 
         //    Normal matrix
@@ -111,10 +117,9 @@ define([
 
         var lightPosition = this.program.getUniform('u_PointLightPosition');
         var lightColor = this.program.getUniform('u_PointLightColor');
-        var transformationMatrix = mat4.clone(modelTorchMatrix);
-        mat4.rotateY(transformationMatrix, transformationMatrix, this.torchLightAzimuth);
+        mat4.rotateY(torchLightMatrix, torchLightMatrix, this.torchLightAzimuth);
         var torchLightPosition = vec3.create();
-        vec3.transformMat4(torchLightPosition, this.torchLightPosition, transformationMatrix);
+        vec3.transformMat4(torchLightPosition, this.torchLightPosition, torchLightMatrix);
         gl.uniform3fv(lightPosition, torchLightPosition);
         gl.uniform3fv(lightColor, this.torchLightColor);
 
