@@ -42,7 +42,7 @@ define([
 
       // Scene camera
       this.camera = Camera.getInstance();
-      this.camera.moveTo([0, 52, 6]);
+      this.camera.moveTo([0, 125, -150]);
       this.camera.setMovementSpeedRatio(5);
       this.camera.setRotationSpeedRatio(5);
       this.camera.setFarPlane(RENDER_DISTANCE);

@@ -21,9 +21,10 @@ define([
   'components/ambient-light',
   'components/sun-light',
   'components/fog',
-  'utils/trigonometry'
+  'utils/trigonometry',
+  'utils/colors'
 ],
-  function (webgl, GLMatrix, Program, vShader, fShader, Model, lighthouse, sphere, Camera, AmbientLight, SunLight, Fog, Trigonometry) {
+  function (webgl, GLMatrix, Program, vShader, fShader, Model, lighthouse, sphere, Camera, AmbientLight, SunLight, Fog, Trigonometry, Colors) {
     var gl = webgl.getContext();
     var mat4 = GLMatrix.mat4;
     var vec3 = GLMatrix.vec3;
@@ -43,18 +44,34 @@ define([
       this.torchLightPosition = vec3.fromValues(7.0, 0.0, 0.0);
       this.torchLightAzimuth = 0.0;
       this.torchLightColor = Lighthouse.DEFAULT_TORCH_COLOR;
+      this.torchLightColorTemperature = Lighthouse.DEFAULT_TORCH_TEMPERATURE;
 
       this.shininess = Lighthouse.DEFAULT_SHININESS;
       this.specularColor = Lighthouse.DEFAULT_SPECULAR_COLOR;
 
       this.lastCall = Date.now();
+      this.auto = true;
+
+      // Lighthouse controls
+      var _this = this;
+      _this.torchControlSwitch = document.getElementById('toggle-torch-mode');
+      _this.torchControlSwitch.addEventListener('click', function() {
+        _this.switchAutoManual(_this);
+      });
+
+      var temperatureRange = document.getElementById('torchlight-temperature-control');
+      temperatureRange.addEventListener('input', function() {
+        _this.torchLightColorTemperature= temperatureRange.value;
+        _this.torchLightColor = Colors.kelvinToRGB(_this.torchLightColorTemperature);
+      });
     }
 
     Lighthouse.DEFAULT_POSITION = vec3.fromValues(-66.1, 46.32, 89.51);
     Lighthouse.DEFAULT_SCALE = 14;
     Lighthouse.DEFAULT_SHININESS = 40.0;
     Lighthouse.DEFAULT_SPECULAR_COLOR = vec3.fromValues(0.68, 0.73, 0.78);
-    Lighthouse.DEFAULT_TORCH_COLOR = vec3.fromValues(1.0, 0.77, 0.05);
+    Lighthouse.DEFAULT_TORCH_TEMPERATURE = 3500;
+    Lighthouse.DEFAULT_TORCH_COLOR = Colors.kelvinToRGB(Lighthouse.DEFAULT_TORCH_TEMPERATURE);
     Lighthouse.DEFAULT_ANGLE_STEP = Trigonometry.degreesToRadians(55.0);
 
 
@@ -142,12 +159,39 @@ define([
         attributes = { size: 8, normals: { position: 3 } };
         this.torchModel.draw(this.program, mvpMatrix, attributes);
       },
+      switchAutoManual: function(context) {
+        var lightouseControls = document.getElementById('lighthouse-controls');
+        if (context.auto) {
+          lightouseControls.innerHTML = '' +
+            '<hr>' +
+            '<label>' +
+            'Rotation angle (0 - 360): ' +
+            '<input id="torchlight-azimuth-control" type="range" value="' + Trigonometry.radiansToDegrees(context.torchLightAzimuth) + '" min="0" max="360">' +
+            '</label>';
+
+          context.torchControlSwitch.innerHTML = 'Auto rotation';
+          var angleRange = document.getElementById('torchlight-azimuth-control');
+          angleRange.addEventListener('input', function() {
+            context.torchLightAzimuth = Trigonometry.degreesToRadians(angleRange.value);
+          });
+        } else {
+          lightouseControls.innerHTML = '';
+          context.torchControlSwitch.innerHTML = 'Manual rotation';
+        }
+        context.auto = !context.auto;
+      },
       animate: function() {
         var now = Date.now();
         var elapsed = now - this.lastCall;
         this.lastCall = now;
-        this.torchLightAzimuth = (this.torchLightAzimuth + Lighthouse.DEFAULT_ANGLE_STEP * elapsed / 1000.0)
-          % Trigonometry.degreesToRadians(360);
+        if (this.auto) {
+          this.torchLightAzimuth = (this.torchLightAzimuth + Lighthouse.DEFAULT_ANGLE_STEP * elapsed / 1000.0)
+            % Trigonometry.degreesToRadians(360);
+        }
+
+        var lighthouseInfo = document.getElementById('lighthouse-info');
+        lighthouseInfo.innerHTML = 'Torch color temperature: ' + this.torchLightColorTemperature +
+          'k Torch azimuth: ' + Trigonometry.radiansToDegrees(this.torchLightAzimuth);
       }
     };
 

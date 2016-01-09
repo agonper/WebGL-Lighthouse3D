@@ -9,9 +9,22 @@
         Your browser doesn't support HTML5. Please update your browser.
     </canvas>
 
+    <h3>Camera data</h3>
     <p id="camera-info"></p>
-
+    <h3>Lighthouse info</h3>
     <p id="lighthouse-info"></p>
+    <h3>Lighthouse controls</h3>
+    <div id="lighthouse-controls"></div>
+    <div>
+        <hr>
+        <label>
+            Torch color temperature(1500k - 15000k):
+            <input id="torchlight-temperature-control" type="range" value="3500" min="1500" max="15000" step="10">
+        </label>
+    </div>
+    <hr>
+    <button id="toggle-torch-mode">Manual rotation</button>
+
     <script src="js/lib/webgl-utils.js"></script>
     <script src="js/lib/webgl-debug.js"></script>
     <script src="js/config.js"></script>
