@@ -1,5 +1,7 @@
 /**
  * Created by Alberto on 06/01/2016.
+ *
+ * Scene forest, located at the entry of the path that takes the observer to the lighthouse
  */
 define([
   'initializers/webgl',

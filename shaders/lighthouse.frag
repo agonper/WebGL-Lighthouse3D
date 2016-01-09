@@ -20,11 +20,11 @@ varying float v_Dist;
 varying vec3 v_Position;
 void main() {
     float nDotL = max(dot(v_Normal, -u_LightDirection), 0.0);
-    vec3 eyeFocus = normalize(u_Eye);
+    vec3 eyeDirection = normalize(u_Eye - v_Position);
     vec3 reflection = reflect(u_LightDirection, v_Normal);
 
     vec3 diffuse;
-    if (v_Position.y > 173.0) {
+    if (v_Position.y > 173.0) { // Iluminate only the top of the lighthouse with the torchlight
         vec3 pointLightDirection = normalize(u_PointLightPosition - vec3(v_Position));
         float nDotPL = max(dot(pointLightDirection, v_Normal), 0.0);
         diffuse = u_LightColor * v_Color.rgb * nDotL + u_PointLightColor * v_Color.rgb * nDotPL;
@@ -32,7 +32,7 @@ void main() {
         diffuse = u_LightColor * v_Color.rgb * nDotL;
     }
     vec3 ambient = u_AmbientLight * v_Color.rgb;
-    vec3 specular = u_SpecularColor * pow(max(dot(reflection, eyeFocus), 0.0), u_Shininess);
+    vec3 specular = u_SpecularColor * pow(max(dot(eyeDirection, reflection), 0.0), u_Shininess);
     vec3 lightedColor = diffuse + ambient + specular;
 
     float fogFactor = clamp((u_FogDist.y - v_Dist) / (u_FogDist.y - u_FogDist.x), 0.0, 1.0);

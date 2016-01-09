@@ -1,5 +1,11 @@
 /**
  * Created by Alberto on 05/01/2016.
+ *
+ * Directional light.
+ *
+ * Characteristics:
+ * - Orbits surrounding the scene point (0, 0, 0)
+ * - Basic day/night effect
  */
 define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl, GLMatrix, Trigonometry) {
   var gl = webgl.getContext();

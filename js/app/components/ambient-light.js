@@ -1,5 +1,7 @@
 /**
  * Created by Alberto on 05/01/2016.
+ *
+ * Common ambient light for the whole scene
  */
 define(['initializers/webgl', 'GLMatrix'], function (webgl, GLMatrix) {
   var gl = webgl.getContext();

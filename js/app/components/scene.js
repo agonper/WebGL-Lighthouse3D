@@ -1,5 +1,7 @@
 /**
  * Created by Alberto on 31/12/2015.
+ *
+ * Entry element, creates and mantains the content of the scene
  */
 define([
   'initializers/webgl',
@@ -10,9 +12,10 @@ define([
   'components/fog',
   'components/terrain',
   'components/lighthouse',
-  'components/forest'
+  'components/forest',
+  'components/sea'
   ],
-  function(webgl, Camera, TextureStorage, AmbientLight, SunLight, Fog, Terrain, Lighthouse, Forest) {
+  function(webgl, Camera, TextureStorage, AmbientLight, SunLight, Fog, Terrain, Lighthouse, Forest, Sea) {
     var RENDER_DISTANCE = 350.0;
     var MAP_SIZE = 512.0;
 
@@ -32,6 +35,8 @@ define([
       textureStorage.storeTexture('terrain/texture.png', 0);
       textureStorage.storeTexture('terrain/normals.png', 1);
       textureStorage.storeTexture('terrain/heightmap.png', 2);
+      // Sea textures
+      textureStorage.storeTexture('sea/normals.jpg', 0);
 
       // Scene camera
       this.camera = Camera.getInstance();
@@ -61,6 +66,7 @@ define([
       var sceneLighthouse = new Lighthouse();
       this.sceneObjects.push(sceneLighthouse);
       this.sceneObjects.push(new Forest(MAP_SIZE));
+      this.sceneObjects.push(new Sea(MAP_SIZE));
 
       // Animated scene objects
       this.animatedObjects.push(sunLight);

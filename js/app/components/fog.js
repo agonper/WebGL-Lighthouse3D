@@ -1,5 +1,7 @@
 /**
  * Created by Alberto on 05/01/2016.
+ *
+ * Fog added to the whole scene, ambient effect
  */
 define(['initializers/webgl', 'GLMatrix'], function (webgl, GLMatrix) {
   var gl = webgl.getContext();

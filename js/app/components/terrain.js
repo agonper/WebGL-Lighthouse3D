@@ -2,6 +2,13 @@
  * Created by Alberto on 04/01/2016.
  *
  * Scene terrain for representing all the scene objects on the top of it
+ *
+ * Terrain textures generated with the tool L3DT:
+ * - Terrain texture
+ * - Terrain heightmap, a greyscale image in which each point represents the height for that point on the terrain
+ * scale 1:10 (10 Horizontal units: 1 Vertical unit)
+ * - Terrain normals for the illumination
+ *
  */
 define([
   'initializers/webgl',

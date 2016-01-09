@@ -1,5 +1,12 @@
 /**
  * Created by Alberto on 08/01/2016.
+ *
+ * Main scene component all surrounds the lighthouse.
+ *
+ * Characteristics:
+ * - Shininess
+ * - Rotating torch
+ * - Rotating torchlight
  */
 define([
   'initializers/webgl',
