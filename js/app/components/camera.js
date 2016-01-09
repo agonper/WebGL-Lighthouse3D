@@ -45,17 +45,20 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
 
     //  Mouse
     var pointerLock = false;
-    canvas.addEventListener('click', function(ev) {
+    canvas.addEventListener('click', function() {
       canvas.requestPointerLock = canvas.requestPointerLock ||
         canvas.mozRequestPointerLock ||
         canvas.webkitRequestPointerLock;
       canvas.requestPointerLock();
     });
-    document.addEventListener('pointerlockchange', function (ev) {
+    document.addEventListener('pointerlockchange', pointerLockChange, false);
+    document.addEventListener('mozpointerlockchange', pointerLockChange, false);
+    document.addEventListener('webkitpointerlockchange', pointerLockChange, false);
+    function pointerLockChange() {
       pointerLock = !!(document.pointerLockElement === canvas ||
       document.mozPointerLockElement === canvas ||
       document.webkitPointerLockElement === canvas);
-    });
+    }
     document.addEventListener('mousemove', function(ev) {
       if (pointerLock) {
         _this.onMouseMove(_this, ev);

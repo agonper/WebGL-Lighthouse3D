@@ -102,7 +102,6 @@ define([
         // Torch
 
         //    Model matrix
-        //modelTorchMatrix = mat4.clone(modelLighthouseMatrix);
         mat4.translate(modelTorchMatrix, modelTorchMatrix, this.torchPosition);
         torchLightMatrix = mat4.clone(modelTorchMatrix); // Torch light origin -> Torch
         mat4.rotateY(modelTorchMatrix, modelTorchMatrix, this.torchLightAzimuth);
