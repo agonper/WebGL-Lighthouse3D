@@ -76,7 +76,10 @@ define([
         Fog.getInstance().addToObject(this.program);
 
         var attributes = { size: 8, texCoords: { position: 6 } };
+
+        gl.depthMask(false);
         this.model.draw(this.program, mvpMatrix, attributes);
+        gl.depthMask(true);
       }
     };
 

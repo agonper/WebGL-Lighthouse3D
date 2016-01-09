@@ -92,7 +92,7 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
       this.position = vec3.clone(position);
     },
     setFarPlane: function(distance) {
-      this.farPlane = distance + 50.0;
+      this.farPlane = distance + 25.0;
       mat4.perspective(this.projMatrix, this.fov, canvas.width / canvas.height, 0.1, this.farPlane);
     },
     onMouseMove: function(context, ev) {
