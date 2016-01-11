@@ -1,0 +1,32 @@
+.page-bg {
+    background-image: url("../img/lighthouse-bg.svg");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.bg-black {
+    background-color: #222;
+    color: #fff;
+}
+
+.navbar {
+    border: 0;
+    -webkit-border-radius:0;
+    -moz-border-radius:0;
+    border-radius:0;
+}
+
+.footer {
+    padding: 1em;
+}
+
+.footer a:hover {
+    color: #60aed1;
+}
+
+.footer a:visited {
+    color: #337ab7;
+}

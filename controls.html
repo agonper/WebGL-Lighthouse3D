@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lighthouse 3D</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-bg">
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="index.html">Lighthouse 3D</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="index.html">Demo</a></li>
+                <li class="active"><a href="controls.html">Controls</a></li>
+                <li><a href="features.html">Features</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="well">
+            <h3>Lighthouse 3D scene controls</h3>
+            <hr>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="col-sm-2 col-md-2">Action</th>
+                        <th class="col-sm-5 col-md-5">Primary</th>
+                        <th class="col-sm-5 col-md-5">Secondary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="col-sm-2 col-md-2">
+                            <b>Displacing the camera</b>
+                        </td>
+                        <td class="col-sm-5 col-md-5">
+                            <p>Move forward: <kbd>W</kbd></p>
+                            <p>Move left: <kbd>A</kbd></p>
+                            <p>Move backward: <kbd>S</kbd></p>
+                            <p>Move right: <kbd>D</kbd></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2 col-md-2">
+                            <b>Looking around</b>
+                        </td>
+                        <td class="col-sm-5 col-md-5">
+                            <p>Look up: <kbd class="glyphicon glyphicon-arrow-up"></kbd></p>
+                            <p>Look to the left: <kbd class="glyphicon glyphicon-arrow-left"></kbd></p>
+                            <p>Look down: <kbd class="glyphicon glyphicon-arrow-down"></kbd></p>
+                            <p>Look to the right: <kbd class="glyphicon glyphicon-arrow-right"></kbd></p>
+                        </td>
+                        <td class="col-sm-5 col-md-5">
+                            <p>(Click on the canvas. The browser will request for locking the pointer.
+                                If the request is accepted, then move the mouse around the screen to look around the scene.
+                                Press <kbd>ESC</kbd> to recover the pointer again and stop moving the camera.)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2 col-md-2">
+                            <b>Changing torch light temperature color</b>
+                        </td>
+                        <td class="col-sm-5 col-md-5">
+                            <p>Use the slider at the bottom of the demo page. Temperature color values go from 1500k to 15000k.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2 col-md-2">
+                            <b>Switching between auto and manual torch light rotation modes</b>
+                        </td>
+                        <td class="col-sm-5 col-md-5">
+                            <p>Use the button at the bottom of the demo page. If you return to auto mode from manual,
+                                the torch will continue its rotation from that angle step.
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2 col-md-2">
+                            <b>Changing the rotation angle (azimuth) of the torch light</b>
+                        </td>
+                        <td class="col-sm-5 col-md-5">
+                            <p>Use the slider at the bottom of the demo page, in manual mode only. While the slider is
+                                being activated, the rotation angle will change in real time.
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="container-fluid bg-black text-center footer">
+        <p>Project created by Alberto González Pérez</p>
+        <p>Github: <a href="https://github.com/albertogonper" target="_blank">@albertogonper</a> </p>
+    </div>
+</body>
+</html>

@@ -33,7 +33,8 @@ define(['stats'], function (Stats) {
       this.el = this.stats.domElement;
       this.setMode( this.modes.FPS );
 
-      document.body.appendChild(this.el);
+      var canvasContainer = document.getElementById('canvas-container');
+      canvasContainer.appendChild(this.el);
 
       this.el.style.position = 'absolute';
       this.el.style.left = '0px';
