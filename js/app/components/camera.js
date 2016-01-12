@@ -179,8 +179,16 @@ define(['initializers/webgl', 'GLMatrix', 'utils/trigonometry'], function (webgl
       this.lookAt[2] = this.position[2] + dirLookZ;
 
       var cameraInfo = document.getElementById('camera-info');
-      cameraInfo.innerHTML = 'Observer position: ' + vec3.str(this.position) + '<br>' +
-          'Observer looking at: ' + vec3.str(this.lookAt);
+      cameraInfo.innerHTML = '<b>Observer position: </b><ul>' +
+        '<li>x -> ' + Math.round(this.position[0]*1000)/1000 + '</li>' +
+        '<li>y -> ' + Math.round(this.position[1]*1000)/1000 + '</li>' +
+        '<li>z -> ' + Math.round(this.position[2]*1000)/1000 + '</li>' +
+        '</ul>' +
+        '<b>Observer looking at: </b><ul>' +
+        '<li>x -> ' + Math.round(this.lookAt[0]*1000)/1000 + '</li>' +
+        '<li>y -> ' + Math.round(this.lookAt[1]*1000)/1000 + '</li>' +
+        '<li>z -> ' + Math.round(this.lookAt[2]*1000)/1000 + '</li>' +
+        '</ul>';
 
       mat4.lookAt(this.viewmatrix, this.position, this.lookAt, this.up);
     },

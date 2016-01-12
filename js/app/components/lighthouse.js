@@ -190,8 +190,13 @@ define([
         }
 
         var lighthouseInfo = document.getElementById('lighthouse-info');
-        lighthouseInfo.innerHTML = 'Torch color temperature: ' + this.torchLightColorTemperature +
-          'k Torch azimuth: ' + Trigonometry.radiansToDegrees(this.torchLightAzimuth);
+        lighthouseInfo.innerHTML = '' +
+          '<b>Torch color temperature: </b><ul>' +
+          '<li>' + this.torchLightColorTemperature + 'k</li>'+
+          '</ul>' +
+          '<b>Torch azimuth: </b><ul>' +
+          '<li>'+ Math.round(Trigonometry.radiansToDegrees(this.torchLightAzimuth)*100)/100 + 'º</li>' +
+          '</ul>';
       }
     };
 
